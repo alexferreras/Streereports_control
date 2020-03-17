@@ -22,6 +22,7 @@ public class Report {
     @ManyToOne(optional = false, fetch = FetchType.EAGER)
     private User user;
     @CreationTimestamp
+    @Column( columnDefinition = "DATE DEFAULT CURRENT_DATE")
     private LocalDateTime createdAt = LocalDateTime.now();
     @Column(columnDefinition = "boolean default true")
     private boolean active;

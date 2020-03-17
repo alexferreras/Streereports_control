@@ -3,19 +3,22 @@ package streetsReportsControl.ControlsStreets.Controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import streetsReportsControl.ControlsStreets.DTO.ReportDTO;
 import streetsReportsControl.ControlsStreets.Models.Report;
 import streetsReportsControl.ControlsStreets.Models.User;
 import streetsReportsControl.ControlsStreets.Services.ReportService;
 import streetsReportsControl.ControlsStreets.Services.UserService;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping({"/report"})
 public class ReportController {
-    @Autowired
+
     private ReportService _reportService;
+    private UserService _userService;
 
     @Autowired
     public ReportController(ReportService reportService){
@@ -36,7 +39,16 @@ public class ReportController {
 
 
     @PostMapping
-    public Report create(@RequestBody Report report){
-        return _reportService.save(report);
+    public ResponseEntity<Report> create(@RequestBody ReportDTO reportdto){
+        Report report = new Report();
+        report.setImgUrl(reportdto.getImgUrl());
+        report.setDescription(reportdto.getDescription());
+        report.setLatLng(reportdto.getLatLng());
+        report.setTitle(reportdto.getTitle());
+        User user =_userService.findOne(reportdto.getUser_id());
+        report.setUser(user);
+
+        return ResponseEntity.ok().body( _reportService.save(report));
+
     }
 }

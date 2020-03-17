@@ -22,6 +22,10 @@ public class UserService {
     public List<User> findAll() {
         return _userRepository.findAll().stream().filter(user -> user.isActive()).collect(Collectors.toList());
     }
+    public User findOne(Long id) {
+        return _userRepository.findById(id).orElse(new User());
+    }
+
 
     public Optional<User> findById(Long id) {
         return _userRepository.findById(id);

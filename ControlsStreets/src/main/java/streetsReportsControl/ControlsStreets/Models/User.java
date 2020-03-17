@@ -21,9 +21,11 @@ public class User {
     private String lastName;
     private String address;
     private String profileUrl;
-    @OneToMany( targetEntity=Report.class )
-    private List reports;
+    @OneToMany()
+
+    private List<Report> reports;
     @CreationTimestamp
+    @Column( columnDefinition = "DATE DEFAULT CURRENT_DATE")
     private LocalDateTime createdAt = LocalDateTime.now();
     @Column(columnDefinition = "boolean default true")
     private boolean active;
