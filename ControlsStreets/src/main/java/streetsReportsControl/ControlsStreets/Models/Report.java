@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 public class Report {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String title;
     private String imgUrl;
@@ -22,7 +22,6 @@ public class Report {
     @ManyToOne(optional = false, fetch = FetchType.EAGER)
     private User user;
     @CreationTimestamp
-    @Column( columnDefinition = "DATE DEFAULT CURRENT_DATE")
     private LocalDateTime createdAt = LocalDateTime.now();
     @Column(columnDefinition = "boolean default true")
     private boolean active;

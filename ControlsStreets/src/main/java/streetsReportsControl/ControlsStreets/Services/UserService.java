@@ -19,6 +19,7 @@ public class UserService {
         this._userRepository=userRepository;
 
     }
+
     public List<User> findAll() {
         return _userRepository.findAll().stream().filter(user -> user.isActive()).collect(Collectors.toList());
     }
@@ -26,6 +27,9 @@ public class UserService {
         return _userRepository.findById(id).orElse(new User());
     }
 
+    public Optional<User> findByEmailAndPassword(String email, String password) {
+        return _userRepository.findAllByEmailAndPassword(email, password);
+    }
 
     public Optional<User> findById(Long id) {
         return _userRepository.findById(id);
@@ -37,5 +41,9 @@ public class UserService {
 
     public void deleteById(Long id) {
         _userRepository.deleteById(id);
+    }
+
+    public boolean existsByEmail(String email) {
+        return _userRepository.existsByEmail(email);
     }
 }
