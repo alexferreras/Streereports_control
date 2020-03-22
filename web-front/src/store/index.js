@@ -13,7 +13,7 @@ export default new Vuex.Store({
       password: '123'
     },
     user: {
-      id: 1,
+      id: 2,
       username: 'admin',
       password: '123',
       logged: true

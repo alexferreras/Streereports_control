@@ -43,11 +43,11 @@
                         />
                     </b-field> -->
                     <b-field label="Image">
-                        <b-input v-model="initialMarker.imageUrl"></b-input>
+                        <b-input v-model="initialMarker.imgUrl"></b-input>
                     </b-field>
                     <!-- <b-field>
                       <b-upload
-                        v-model="initialMarker.imageUrl"
+                        v-model="initialMarker.imgUrl"
                         accept="image/*"
                         drag-drop
                       >
@@ -67,8 +67,8 @@
                     </b-field>
 
                     <div class="tags">
-                      <span class="tag is-primary imageName" v-if="initialMarker.imageUrl">
-                        {{ initialMarker.imageUrl.name.substring(0, 40) }}
+                      <span class="tag is-primary imageName" v-if="initialMarker.imgUrl">
+                        {{ initialMarker.imgUrl.name.substring(0, 40) }}
                         <button
                           class="delete is-small"
                           type="button"
@@ -122,13 +122,14 @@
             <div>
               <img
                 class="image"
-                :src="marker.image"
-                alt="Imagen de reporte">
-              <p><strong>Título:</strong> {{ marker.title }}</p>
-              <p><strong>Descripción:</strong> {{ marker.description }}</p>
-              <a :href="marker.creator.profileUrl">{{ marker.creator.name }}</a>
+                :src="marker.imgUrl"
+                alt="Report's image">
+              <p><strong>Title:</strong> {{ marker.title }}</p>
+              <p><strong>Description:</strong> {{ marker.description }}</p>
+              <p><strong>Author:</strong> {{ (marker.user_id) ? 'A person' : 'Anonymous' }}</p>
+              <!-- <a :href="marker.creator.profileUrl">{{ marker.creator.name }}</a> -->
             </div>
-            <b-button
+            <!-- <b-button
               type="is-info"
               icon-pack="fas"
               icon-right="info-circle"
@@ -136,7 +137,7 @@
               @click="showDetails"
             >
               Ver detalles
-            </b-button>
+            </b-button> -->
           </div>
         </l-popup>
       </l-marker>
@@ -166,8 +167,8 @@ export default {
         id: 0,
         title: '',
         description: '',
-        location: {lat: 18.476183975087867, lng: -69.91355895996095},
-        imageUrl: null,
+        location: {lat: 18.472963803253037, lng: -69.91263628005983},
+        imgUrl: null,
         user_id: this.$store.getters.user.id
       },
       markers: [
@@ -205,38 +206,55 @@ export default {
     this.getMarkers();
   },
   methods: {
-    showDetails() {
-      console.log('clicked');
-    },
+    // showDetails() {
+    //   console.log('clicked');
+    // },
     updateMarkerPosition(latLng) {
       this.initialMarker.location = latLng
     },
     getMarkers() {
       this.http({url: this.$store.state.urls.server + "/reports"})
         .then(response => {
-          this.markers = response;
+          const data = [...response];
+          response.forEach(_marker => {
+            _marker.location = JSON.parse(_marker.latLng);
+          });
+
+          this.markers = data;
         })
         .catch(e => {
           console.error(e);
         });
     },
     addNewMarker() {
-      const data = { ...this.initialMarker };
-      console.log(data);
-      return;
+      const item = { ...this.initialMarker };
+      this.markers.push(item);
 
-      this.markers.push(data);
+      item.latLng = JSON.stringify({
+        lat: this.initialMarker.location.lat,
+        lng: this.initialMarker.location.lng
+      });
 
-      this.http({url: `${this.$store.state.urls.server}/reports`,
-        body: {
-
-        }
+      this.http({method: 'POST', url: `${this.$store.state.urls.server}/reports`,
+        body: { ...item }
+      })
+      .then(response => {
+        this.setNewMarker();
+      })
+      .catch(e => console.error(e));
+    },
+    setNewMarker() {
+      this.initialMarker.id = 0;
+      this.initialMarker.title = '';
+      this.initialMarker.description = '';
+      this.deleteImage();
+      this.initialMarker.location = {
+        lat: this.initialMarker.location.lat + 0.0050,
+        lng: this.initialMarker.location.lng
       }
-      )
-      .then(response => {})
     },
     deleteImage() {
-      this.initialMarker.imageUrl = null
+      this.initialMarker.imgUrl = null
     }
   },
   computed: {
